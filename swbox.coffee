@@ -1,7 +1,12 @@
 #!/usr/bin/env coffee
 
+exec = require('child_process').exec
+
 write = (text) ->
   process.stdout.write "#{text}\n"
+
+warn = (text) ->
+  process.stderr.write "#{text}\n"
 
 showVersion = ->
   write 'swbox 0.0.1'
@@ -11,10 +16,32 @@ showHelp = ->
     write 'swbox:\tA command line interface for interacting with ScraperWiki boxes'
     write 'Usage:\tswbox <command> [args]'
     write 'Commands:'
-    write '\tswbox help\t\tShow this help'
-    write '\tswbox [-v|--version]\tShow version'
+    write '\tswbox mount <boxName>\tMount <boxName> as an sshfs drive'
+    write '\tswbox [-v|--version]\tShow version & license info'
+    write '\tswbox help\t\tShow this documentation'
+
+mountBox = ->
+  args = process.argv[3..]
+  if args.length == 1
+    boxName = args[0]
+    path = "/tmp/ssh/#{boxName}"
+    exec "mkdir -p #{path} && sshfs #{boxName}@box.scraperwiki.com:. #{path} -ovolname=#{boxName}", (err, stdout, stderr) ->
+      if err?
+        if err.indexOf 'sshfs: command not found' > -1
+          warn 'sshfs is not installed!'
+          warn 'You can find it here: http://osxfuse.github.com'
+        else
+          warn 'Unexpected error:'
+          warn err
+      else
+        write "Box mounted:\t#{path}"
+  else
+    write 'Please supply exactly one <boxName> argument'
+    write 'Usage:'
+    write '\tswbox mount <boxName>\tMount <boxName> as an sshfs drive'
 
 swbox =
+  mount: mountBox
   help: showHelp
   '--help': showHelp
   '-v': showVersion
