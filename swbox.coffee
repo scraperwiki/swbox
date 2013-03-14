@@ -26,11 +26,17 @@ mountBox = ->
   if args.length == 1
     boxName = args[0]
     path = "/tmp/ssh/#{boxName}"
-    exec "mkdir -p #{path} && sshfs #{boxName}@box.scraperwiki.com:. #{path} -ovolname=#{boxName}", (err, stdout, stderr) ->
+    exec "mkdir -p #{path} && sshfs #{boxName}@box.scraperwiki.com:. #{path} -ovolname=#{boxName} -oBatchMode=yes", {timeout: 5000}, (err, stdout, stderr) ->
       if err?
-        if err.indexOf 'sshfs: command not found' > -1
+        if "#{err}".indexOf('sshfs: command not found') > -1
           warn 'sshfs is not installed!'
           warn 'You can find it here: http://osxfuse.github.com'
+        else if "#{err}".indexOf('remote host has disconnected') > -1
+          warn 'Error: The box server did not respond.'
+          warn "The box ‘#{boxName}’ might not exist, or your SSH key might not be associated with it."
+          warn 'Make sure you can see the box in your Data Hub on http://x.scraperwiki.com'
+          exec "rmdir #{path}", (err) ->
+            if err? then warn "Additionally, we enountered an error while removing the temporary directory at #{path}"
         else
           warn 'Unexpected error:'
           warn err
