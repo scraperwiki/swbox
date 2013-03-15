@@ -12,7 +12,7 @@ The `swbox` command line client requires [Node.js](http://nodejs.org) and [Coffe
 
 1. Git clone this repo and put it somewhere safe.
 
-2. Run this from inside the repo: `echo "export PATH=\$PATH:$(pwd)" >> ~/.bash_profile; source ~/.bash_profile`
+2. Add swbox to your $PATH by running this from inside the repo: `ln -s $(pwd)/swbox.coffee /usr/local/bin/swbox`
 
 3. Read the documentation by running `swbox help`
 
