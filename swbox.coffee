@@ -20,6 +20,7 @@ showHelp = ->
     write 'Commands:'
     write '\tswbox mount <boxName>\tMount <boxName> as an sshfs drive'
     write '\tswbox unmount <boxName>\tUnmount the <boxName> sshfs drive'
+    write '\tswbox update\t\tDownload latest version of swbox'
     write '\tswbox [-v|--version]\tShow version & license info'
     write '\tswbox help\t\tShow this documentation'
 
@@ -67,6 +68,16 @@ unmountBox = ->
     write 'Please supply exactly one <boxName> argument'
     write 'Usage:'
     write '\tswbox unmount <boxName>\tUnmount the <boxName> sshfs drive'
+
+update = ->
+  exec "cd #{__dirname}; git pull", (err, stdout, stderr) ->
+    if "#{stdout}".indexOf 'Already up-to-date' == 0
+      write "You're already running the latest version of swbox"
+    else if not stderr
+      write 'swbox has been updated!'
+    else
+      warn 'Error: could not update.'
+      warn stderr
 
 swbox =
   mount: mountBox
