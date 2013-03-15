@@ -18,5 +18,7 @@ The `swbox` command line client requires [Node.js](http://nodejs.org) and [Coffe
 
 ## Coming soon
 
+* Tab-completion of commands
+* Tab-completion of boxNames (based on previously-mounted boxNames)
 * `swbox link <localDirectory> <boxName>` – pair a local directory to a box, for later syncing
 * `swbox sync` (run from inside a previously `link`ed directory) – rsync directory contents up to box 
