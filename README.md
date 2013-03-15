@@ -25,6 +25,9 @@ The `swbox` command line client requires [Node.js](http://nodejs.org) and [Coffe
 
 ## Changelog
 
+#### 0.0.2
+* `swbox update` command to download the latest version of swbox
+
 #### 0.0.1 – Initial release
 * mounting and unmounting boxes as sshfs drives
 * license, help and docs
