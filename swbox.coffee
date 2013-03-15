@@ -1,5 +1,7 @@
 #!/usr/bin/env coffee
 
+__version = '0.0.2'
+
 exec = require('child_process').exec
 
 write = (text) ->
@@ -9,7 +11,7 @@ warn = (text) ->
   process.stderr.write "#{text}\n"
 
 showVersion = ->
-  write 'swbox 0.0.1'
+  write "swbox #{__version}"
   write '© Zarino Zappia, AGPL Licensed'
 
 showHelp = ->
@@ -70,6 +72,7 @@ swbox =
   mount: mountBox
   unmount: unmountBox
   help: showHelp
+  update: update
   '--help': showHelp
   '-v': showVersion
   '--version': showVersion
