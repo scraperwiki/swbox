@@ -25,6 +25,9 @@ The `swbox` command line client requires [Node.js](http://nodejs.org) and [Coffe
 
 ## Changelog
 
+#### 0.0.3
+* added `-oworkaround=rename` to sshfs options, to allow `rsync` and `git` to rename/update files
+
 #### 0.0.2
 * `swbox update` command to download the latest version of swbox
 
