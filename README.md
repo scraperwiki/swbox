@@ -18,13 +18,13 @@ A command line interface for interacting with ScraperWiki boxes
 
 `swbox clone <boxName>` – Make a local copy of the entire contents of `<boxName>`
 
-`swbox sync` (from inside a local clone) – Synchronise the local clone with the original box
+`swbox sync` (from inside a local clone) – Synchronise the local clone with the original box, one-off
 
-`swbox watch` (from inside a local clone) – Synchronise changes *as they are made*
+`swbox watch` (from inside a local clone) – Synchronise changes to the local clone *as they are made*
 
 ## How to use
 
-1. Git clone the swbox repo and to somewhere safe.
+1. Git clone the swbox repo to somewhere safe.
 
     ```shell
     cd ~ # feel free to change this directory 
