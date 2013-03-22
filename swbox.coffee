@@ -101,6 +101,25 @@ cloneBox = ->
     write '\tswbox clone <boxName> <dest>\tMake a local copy of the entire contents of <boxName>'
     write '\t\t\t\t\tDestination directory <dest> is optional, defaults to <boxName>'
 
+syncBox = ->
+  boxName = null
+  for i in [0..10]
+    location = Array(i).join '../'
+    if fs.existsSync "#{location}.swbox"
+      json = fs.readFileSync "#{location}.swbox", "utf8"
+      settings = JSON.parse(json)
+      if settings.boxName
+        boxName = settings.boxName
+      else
+        warn "Error: Settings file at #{location}.swbox does not contain a boxName value!"
+      break
+  if boxName
+    command = """rsync -avx --delete-excluded -e 'ssh -o "NumberOfPasswordPrompts 0"' #{location} #{boxName}@box.scraperwiki.com:."""
+    write command
+  else
+    warn "Error: I don‘t know where I am!"
+    warn "You must run this command from within a local clone of a ScraperWiki box."
+
 update = ->
   exec "cd #{__dirname}; git pull", (err, stdout, stderr) ->
     if "#{stdout}".indexOf 'Already up-to-date' == 0
@@ -115,6 +134,7 @@ swbox =
   mount: mountBox
   unmount: unmountBox
   clone: cloneBox
+  sync: syncBox
   help: showHelp
   update: update
   '--help': showHelp
