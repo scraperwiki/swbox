@@ -26,17 +26,17 @@ A command line interface for interacting with ScraperWiki boxes
 
 1. Git clone the swbox repo and to somewhere safe.
 
-```shell
-cd ~ # feel free to change this directory 
-git clone git://github.com/zarino/swbox.git
-cd swbox
-```
+    ```shell
+    cd ~ # feel free to change this directory 
+    git clone git://github.com/zarino/swbox.git
+    cd swbox
+    ```
 
 2. Add swbox to your $PATH, so you can type "swbox" from anywhere on your filesystem.
 
-```shell
-ln -s $(pwd)/swbox.coffee /usr/local/bin/swbox
-```
+    ```shell
+    ln -s $(pwd)/swbox.coffee /usr/local/bin/swbox
+    ```
 
 3. Read the documentation by running `swbox help`
 
