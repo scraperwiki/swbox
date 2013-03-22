@@ -1,6 +1,8 @@
 #!/usr/bin/env coffee
 
-__version = '0.0.3'
+fs = require 'fs' 
+
+__version = '0.0.4'
 
 exec = require('child_process').exec
 
@@ -76,7 +78,7 @@ cloneBox = ->
   if args.length > 0
     boxName = args[0]
     destination = args[1] or boxName
-    write "Cloning box ‘#{boxName}’ to directory #{process.cwd()}/#{destination}"
+    write "Cloning box ‘#{boxName}’ to directory #{process.cwd()}/#{destination}..."
     # command = """scp -r -o "BatchMode yes" #{boxName}@box.scraperwiki.com:~ #{process.cwd()}/#{destination}"""
     command = """rsync -avx --delete-excluded -e 'ssh -o "NumberOfPasswordPrompts 0"' #{boxName}@box.scraperwiki.com:. #{process.cwd()}/#{destination}"""
     exec command, (err, stdout, stderr) ->
@@ -88,6 +90,10 @@ cloneBox = ->
         warn "Unexpected error:"
         warn err or stderr
       else
+        write "Saving settings into #{destination}/.swbox..."
+        settings =
+          boxName: boxName
+        fs.writeFileSync "#{destination}/.swbox", JSON.stringify(settings, null, 2)
         write "Box cloned to #{destination}"
 
 update = ->

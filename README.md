@@ -6,7 +6,9 @@ A command line interface for interacting with ScraperWiki boxes
 
 `swbox mount <boxName>` – Mount `<boxName>` as an sshfs drive on your Mac
   
-`swbox unmount <boxName>` – Unmount the `<boxName>` sshfs drive 
+`swbox unmount <boxName>` – Unmount the `<boxName>` sshfs drive
+
+`swbox clone <boxName>` – Make a local copy of the entire contents of `<boxName>`
 
 `swbox update` – Download latest version of swbox
 
@@ -15,8 +17,6 @@ A command line interface for interacting with ScraperWiki boxes
 `swbox help` – Show documentation
 
 ## Coming soon
-
-`swbox clone <boxName>` – Make a local copy of the entire contents of `<boxName>`
 
 `swbox sync` (from inside a local clone) – Synchronise the local clone with the original box, one-off
 
@@ -47,6 +47,10 @@ Mounting boxes as local drives requires **Fuse** and **SSHFS**. Both are availab
 The `swbox` command line client requires [Node.js](http://nodejs.org) and [CoffeeScript](http://coffeescript.org) to be installed. `swbox update` requires Git.
 
 ## Changelog
+
+#### 0.0.4
+
+* `swbox clone` command to clone an entire box's contents to your local filesystem
 
 #### 0.0.3
 * added `-oworkaround=rename` to sshfs options, to allow `rsync` and `git` to rename/update files
