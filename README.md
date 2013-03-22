@@ -48,6 +48,10 @@ The `swbox` command line client requires [Node.js](http://nodejs.org) and [Coffe
 
 ## Changelog
 
+#### 0.0.5
+
+* `swbox sync` command to synchronise local changes inside a clone, back up to the original box
+
 #### 0.0.4
 
 * `swbox clone` command to clone an entire box's contents to your local filesystem
