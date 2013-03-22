@@ -2,7 +2,7 @@
 
 fs = require 'fs' 
 
-__version = '0.0.4'
+__version = '0.0.5'
 
 exec = require('child_process').exec
 
@@ -24,6 +24,7 @@ showHelp = ->
     write '\tswbox unmount <boxName>\t\tUnmount the <boxName> sshfs drive'
     write '\tswbox clone <boxName> <dest>\tMake a local copy of the entire contents of <boxName>'
     write '\t\t\t\t\tDestination directory <dest> is optional, defaults to <boxName>'
+    write '\tswbox sync\t\t\tSynchronise a local clone with the original box'
     write '\tswbox update\t\t\tDownload latest version of swbox'
     write '\tswbox [-v|--version]\t\tShow version & license info'
     write '\tswbox help\t\t\tShow this documentation'
