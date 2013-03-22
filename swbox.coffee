@@ -102,23 +102,45 @@ cloneBox = ->
     write '\t\t\t\t\tDestination directory <dest> is optional, defaults to <boxName>'
 
 syncBox = ->
-  boxName = null
-  for i in [0..10]
-    location = Array(i).join '../'
-    if fs.existsSync "#{location}.swbox"
-      json = fs.readFileSync "#{location}.swbox", "utf8"
-      settings = JSON.parse(json)
-      if settings.boxName
-        boxName = settings.boxName
-      else
-        warn "Error: Settings file at #{location}.swbox does not contain a boxName value!"
-      break
-  if boxName
-    command = """rsync -avx --delete-excluded -e 'ssh -o "NumberOfPasswordPrompts 0"' #{location} #{boxName}@box.scraperwiki.com:."""
-    write command
+  dir = process.cwd()
+  walkUp = ->
+    dir = dir.split('/').reverse()[1..].reverse().join '/'
+  # Loop up through parent directories until we either
+  # find a .swbox file, or we run out of directories
+  walkUp() until fs.existsSync "#{dir}/.swbox" or dir == ''
+  if dir
+    settings = JSON.parse( fs.readFileSync "#{dir}/.swbox", "utf8" )
+    if settings.boxName
+      boxName = settings.boxName
+      command = """rsync -avx --itemize-changes --delete-excluded --exclude='.DS_Store' -e 'ssh -o "NumberOfPasswordPrompts 0"' #{dir}/ #{boxName}@box.scraperwiki.com:."""
+      exec command, (err, stdout, stderr) ->
+        if stderr.match /^Permission denied/
+          warn 'Error: Permission denied.'
+          warn "The box ‘#{boxName}’ might not exist, or your SSH key might not be associated with it."
+          warn 'Make sure you can see the box in your Data Hub on http://x.scraperwiki.com'
+        else if err or stderr
+          warn "Unexpected error:"
+          warn err or stderr
+        else
+          write "Synchronising #{dir}/ with #{boxName}@box.scraperwiki.com..."
+          rsyncSummary stdout
+    else
+      warn "Error: Settings file at #{dir}/.swbox does not contain a boxName value!"
   else
     warn "Error: I don‘t know where I am!"
     warn "You must run this command from within a local clone of a ScraperWiki box."
+
+rsyncSummary = (output) ->
+  # output should be the stdout from an `rsync --itemize-changes` command
+  lines = output.split('\n')
+  for line in lines
+    file = line.replace /^\S+ /, ''
+    if line.indexOf('<') == 0
+      write "\u001b[32m▲ #{file}\u001b[0m"
+    else if line.indexOf('>') == 0
+      write "\u001b[33m▼ #{file}\u001b[0m"
+    else if line.indexOf('*deleting') == 0
+      write "\u001b[31m– #{file}\u001b[0m"
 
 update = ->
   exec "cd #{__dirname}; git pull", (err, stdout, stderr) ->
