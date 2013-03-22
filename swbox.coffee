@@ -18,11 +18,13 @@ showHelp = ->
     write 'swbox:\tA command line interface for interacting with ScraperWiki boxes'
     write 'Usage:\tswbox <command> [args]'
     write 'Commands:'
-    write '\tswbox mount <boxName>\tMount <boxName> as an sshfs drive'
-    write '\tswbox unmount <boxName>\tUnmount the <boxName> sshfs drive'
-    write '\tswbox update\t\tDownload latest version of swbox'
-    write '\tswbox [-v|--version]\tShow version & license info'
-    write '\tswbox help\t\tShow this documentation'
+    write '\tswbox mount <boxName>\t\tMount <boxName> as an sshfs drive'
+    write '\tswbox unmount <boxName>\t\tUnmount the <boxName> sshfs drive'
+    write '\tswbox clone <boxName> <dest>\tMake a local copy of the entire contents of <boxName>'
+    write '\t\t\t\t\tDestination directory <dest> is optional, defaults to <boxName>'
+    write '\tswbox update\t\t\tDownload latest version of swbox'
+    write '\tswbox [-v|--version]\t\tShow version & license info'
+    write '\tswbox help\t\t\tShow this documentation'
 
 mountBox = ->
   args = process.argv[3..]
@@ -69,6 +71,25 @@ unmountBox = ->
     write 'Usage:'
     write '\tswbox unmount <boxName>\tUnmount the <boxName> sshfs drive'
 
+cloneBox = ->
+  args = process.argv[3..]
+  if args.length > 0
+    boxName = args[0]
+    destination = args[1] or boxName
+    write "Cloning box ‘#{boxName}’ to directory #{process.cwd()}/#{destination}"
+    # command = """scp -r -o "BatchMode yes" #{boxName}@box.scraperwiki.com:~ #{process.cwd()}/#{destination}"""
+    command = """rsync -avx --delete-excluded -e 'ssh -o "NumberOfPasswordPrompts 0"' #{boxName}@box.scraperwiki.com:. #{process.cwd()}/#{destination}"""
+    exec command, (err, stdout, stderr) ->
+      if stderr.match /^Permission denied/
+        warn 'Error: Permission denied.'
+        warn "The box ‘#{boxName}’ might not exist, or your SSH key might not be associated with it."
+        warn 'Make sure you can see the box in your Data Hub on http://x.scraperwiki.com'
+      else if err or stderr
+        warn "Unexpected error:"
+        warn err or stderr
+      else
+        write "Box cloned to #{destination}"
+
 update = ->
   exec "cd #{__dirname}; git pull", (err, stdout, stderr) ->
     if "#{stdout}".indexOf 'Already up-to-date' == 0
@@ -82,6 +103,7 @@ update = ->
 swbox =
   mount: mountBox
   unmount: unmountBox
+  clone: cloneBox
   help: showHelp
   update: update
   '--help': showHelp
