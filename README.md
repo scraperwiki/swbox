@@ -2,11 +2,23 @@
 
 A command line interface for interacting with ScraperWiki boxes
 
-## Requirements
+## Functions
 
-Mounting boxes as local drives requires **Fuse** and **SSHFS**. Both are available on the [Fuse for OS X homepage](http://osxfuse.github.com/)
+`swbox mount <boxName>` – Mount `<boxName>` as an sshfs drive on your Mac
+  
+`swbox unmount <boxName>` – Unmount the `<boxName>` sshfs drive 
 
-The `swbox` command line client requires [Node.js](http://nodejs.org) and [CoffeeScript](http://coffeescript.org) to be installed.
+`swbox update` – Download latest version of swbox
+
+`swbox [-v|--version]` – Show version & license info
+
+`swbox help` – Show documentation
+
+## Coming soon
+
+`swbox clone <boxName>` – Make a local copy of the entire contents of `<boxName>`
+
+`swbox sync` (from inside a local clone) – Synchronise the local clone with the original box
 
 ## How to use
 
@@ -16,12 +28,11 @@ The `swbox` command line client requires [Node.js](http://nodejs.org) and [Coffe
 
 3. Read the documentation by running `swbox help`
 
-## Coming soon
+## Requirements
 
-* Tab-completion of commands
-* Tab-completion of boxNames (based on previously-mounted boxNames)
-* `swbox link <localDirectory> <boxName>` – pair a local directory to a box, for later syncing
-* `swbox sync` (run from inside a previously `link`ed directory) – rsync directory contents up to box
+Mounting boxes as local drives requires **Fuse** and **SSHFS**. Both are available on the [Fuse for OS X homepage](http://osxfuse.github.com/)
+
+The `swbox` command line client requires [Node.js](http://nodejs.org) and [CoffeeScript](http://coffeescript.org) to be installed.
 
 ## Changelog
 
