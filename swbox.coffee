@@ -95,6 +95,11 @@ cloneBox = ->
           boxName: boxName
         fs.writeFileSync "#{destination}/.swbox", JSON.stringify(settings, null, 2)
         write "Box cloned to #{destination}"
+  else
+    write 'Please supply a <boxName> argument, and an optional directory into which to clone the files'
+    write 'Usage:'
+    write '\tswbox clone <boxName> <dest>\tMake a local copy of the entire contents of <boxName>'
+    write '\t\t\t\t\tDestination directory <dest> is optional, defaults to <boxName>'
 
 update = ->
   exec "cd #{__dirname}; git pull", (err, stdout, stderr) ->
