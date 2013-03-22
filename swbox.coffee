@@ -80,7 +80,7 @@ cloneBox = ->
     destination = args[1] or boxName
     write "Cloning box ‘#{boxName}’ to directory #{process.cwd()}/#{destination}..."
     # command = """scp -r -o "BatchMode yes" #{boxName}@box.scraperwiki.com:~ #{process.cwd()}/#{destination}"""
-    command = """rsync -avx --delete-excluded -e 'ssh -o "NumberOfPasswordPrompts 0"' #{boxName}@box.scraperwiki.com:. #{process.cwd()}/#{destination}"""
+    command = """rsync -avx --delete-excluded --exclude='.DS_Store' -e 'ssh -o "NumberOfPasswordPrompts 0"' #{boxName}@box.scraperwiki.com:. #{process.cwd()}/#{destination}"""
     exec command, (err, stdout, stderr) ->
       if stderr.match /^Permission denied/
         warn 'Error: Permission denied.'
