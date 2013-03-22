@@ -20,11 +20,23 @@ A command line interface for interacting with ScraperWiki boxes
 
 `swbox sync` (from inside a local clone) – Synchronise the local clone with the original box
 
+`swbox watch` (from inside a local clone) – Synchronise changes *as they are made*
+
 ## How to use
 
-1. Git clone this repo and put it somewhere safe.
+1. Git clone the swbox repo and to somewhere safe.
 
-2. Add swbox to your $PATH by running this from inside the repo: `ln -s $(pwd)/swbox.coffee /usr/local/bin/swbox`
+```shell
+cd ~ # feel free to change this directory 
+git clone git://github.com/zarino/swbox.git
+cd swbox
+```
+
+2. Add swbox to your $PATH, so you can type "swbox" from anywhere on your filesystem.
+
+```shell
+ln -s $(pwd)/swbox.coffee /usr/local/bin/swbox
+```
 
 3. Read the documentation by running `swbox help`
 
