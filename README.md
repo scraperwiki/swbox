@@ -10,7 +10,7 @@ A command line interface for interacting with ScraperWiki boxes
 
 `swbox clone <boxName>` – Make a local copy of the entire contents of `<boxName>`
 
-`swbox sync` (from inside a local clone) – Synchronise the local clone with the original box, one-off
+`swbox push` (from inside a local clone) – Push changes from a local clone of a box back up to the original box
 
 `swbox update` – Download latest version of swbox
 
