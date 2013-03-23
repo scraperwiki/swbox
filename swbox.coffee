@@ -76,12 +76,11 @@ unmountBox = ->
 
 cloneBox = ->
   args = process.argv[3..]
-  if args.length > 0
+  if args.length == 1
     boxName = args[0]
-    destination = args[1] or boxName
-    write "Cloning box ‘#{boxName}’ to directory #{process.cwd()}/#{destination}..."
+    write "Cloning box ‘#{boxName}’ to directory #{process.cwd()}/#{boxName}..."
     # command = """scp -r -o "BatchMode yes" #{boxName}@box.scraperwiki.com:~ #{process.cwd()}/#{destination}"""
-    command = """rsync -avx --delete-excluded --exclude='.DS_Store' -e 'ssh -o "NumberOfPasswordPrompts 0"' #{boxName}@box.scraperwiki.com:. #{process.cwd()}/#{destination}"""
+    command = """rsync -avx --delete-excluded --exclude='.DS_Store' -e 'ssh -o "NumberOfPasswordPrompts 0"' #{boxName}@box.scraperwiki.com:. #{process.cwd()}/#{boxName}"""
     exec command, (err, stdout, stderr) ->
       if stderr.match /^Permission denied/
         warn 'Error: Permission denied.'
