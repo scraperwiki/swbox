@@ -2,7 +2,7 @@
 
 fs = require 'fs' 
 
-__version = '0.0.5'
+__version = '0.0.6'
 
 exec = require('child_process').exec
 

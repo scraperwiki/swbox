@@ -48,18 +48,26 @@ The `swbox` command line client requires [Node.js](http://nodejs.org) and [Coffe
 
 ## Changelog
 
-#### 0.0.5
+#### 0.0.6 – junction box
+
+* `swbox sync` renamed to `swbox push` since it doesn't actually sync, it removes any files on the destination that aren't present on the local copy.
+* fixed a bug that caused `swbox sync/push` to loop forever when invoked outside of a local box clone
+* `swbox clone` no longer takes an optional destination directory – it will always create a clone, in new directory named after the box, in the current working directory
+* removed `/swbox` symbolic link in root directory – it's no longer needed
+* standardised display of required and optional arguments in help messages
+
+#### 0.0.5 – hotbox
 
 * `swbox sync` command to synchronise local changes inside a clone, back up to the original box
 
-#### 0.0.4
+#### 0.0.4 – chocolate box
 
 * `swbox clone` command to clone an entire box's contents to your local filesystem
 
-#### 0.0.3
+#### 0.0.3 – cereal box
 * added `-oworkaround=rename` to sshfs options, to allow `rsync` and `git` to rename/update files
 
-#### 0.0.2
+#### 0.0.2 – cardboard box
 * `swbox update` command to download the latest version of swbox
 
 #### 0.0.1 – Initial release
