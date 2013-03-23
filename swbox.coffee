@@ -17,17 +17,17 @@ showVersion = ->
   write '© Zarino Zappia, AGPL Licensed'
 
 showHelp = ->
-    write 'swbox:\tA command line interface for interacting with ScraperWiki boxes'
-    write 'Usage:\tswbox <command> [args]'
+    write 'swbox:  A command line interface for interacting with ScraperWiki boxes'
+    write 'Usage:  swbox command <required_argument> [optional_argument]'
     write 'Commands:'
-    write '\tswbox mount <boxName>\t\tMount <boxName> as an sshfs drive'
-    write '\tswbox unmount <boxName>\t\tUnmount the <boxName> sshfs drive'
-    write '\tswbox clone <boxName> <dest>\tMake a local copy of the entire contents of <boxName>'
-    write '\t\t\t\t\tDestination directory <dest> is optional, defaults to <boxName>'
-    write '\tswbox sync\t\t\tSynchronise a local clone with the original box'
-    write '\tswbox update\t\t\tDownload latest version of swbox'
-    write '\tswbox [-v|--version]\t\tShow version & license info'
-    write '\tswbox help\t\t\tShow this documentation'
+    write '    swbox mount <boxName>    Mount <boxName> as an sshfs drive'
+    write '    swbox unmount <boxName>  Unmount the <boxName> sshfs drive'
+    write '    swbox clone <boxName>    Make a local copy of the entire contents of <boxName>'
+    write '                               (into a directory called <boxName> in the current working directory)'
+    write '    swbox push               Push changes from a local clone of a box back up to the original box'
+    write '    swbox update             Download latest version of swbox'
+    write '    swbox -v|--version       Show version & license info'
+    write '    swbox help               Show this documentation'
 
 mountBox = ->
   args = process.argv[3..]
@@ -53,7 +53,7 @@ mountBox = ->
   else
     write 'Please supply exactly one <boxName> argument'
     write 'Usage:'
-    write '\tswbox mount <boxName>\tMount <boxName> as an sshfs drive'
+    write '    swbox mount <boxName>    Mount <boxName> as an sshfs drive'
 
 unmountBox = ->
   args = process.argv[3..]
@@ -72,7 +72,7 @@ unmountBox = ->
   else
     write 'Please supply exactly one <boxName> argument'
     write 'Usage:'
-    write '\tswbox unmount <boxName>\tUnmount the <boxName> sshfs drive'
+    write '    swbox unmount <boxName>    Unmount the <boxName> sshfs drive'
 
 cloneBox = ->
   args = process.argv[3..]
@@ -91,18 +91,18 @@ cloneBox = ->
         warn "Unexpected error:"
         warn err or stderr
       else
-        write "Saving settings into #{destination}/.swbox..."
+        write "Saving settings into #{boxName}/.swbox..."
         settings =
           boxName: boxName
-        fs.writeFileSync "#{destination}/.swbox", JSON.stringify(settings, null, 2)
-        write "Box cloned to #{destination}"
+        fs.writeFileSync "#{boxName}/.swbox", JSON.stringify(settings, null, 2)
+        write "Box cloned to #{boxName}"
   else
-    write 'Please supply a <boxName> argument, and an optional directory into which to clone the files'
+    write 'Please supply a <boxName> argument'
     write 'Usage:'
-    write '\tswbox clone <boxName> <dest>\tMake a local copy of the entire contents of <boxName>'
-    write '\t\t\t\t\tDestination directory <dest> is optional, defaults to <boxName>'
+    write '    swbox clone <boxName>    Make a local copy of the entire contents of <boxName>'
+    write '                             (into a directory called <boxName> in the current working directory)'
 
-syncBox = ->
+pushBox = ->
   dir = process.cwd()
   walkUp = ->
     dir = dir.split('/').reverse()[1..].reverse().join '/'
@@ -123,7 +123,7 @@ syncBox = ->
           warn "Unexpected error:"
           warn err or stderr
         else
-          write "Synchronising #{dir}/ with #{boxName}@box.scraperwiki.com..."
+          write "Applying changes from #{dir}/ to #{boxName}@box.scraperwiki.com..."
           rsyncSummary stdout
     else
       warn "Error: Settings file at #{dir}/.swbox does not contain a boxName value!"
@@ -157,7 +157,7 @@ swbox =
   mount: mountBox
   unmount: unmountBox
   clone: cloneBox
-  sync: syncBox
+  push: pushBox
   help: showHelp
   update: update
   '--help': showHelp
