@@ -108,7 +108,7 @@ syncBox = ->
     dir = dir.split('/').reverse()[1..].reverse().join '/'
   # Loop up through parent directories until we either
   # find a .swbox file, or we run out of directories
-  walkUp() until fs.existsSync "#{dir}/.swbox" or dir == ''
+  walkUp() until ( dir == '' or fs.existsSync "#{dir}/.swbox" )
   if dir
     settings = JSON.parse( fs.readFileSync "#{dir}/.swbox", "utf8" )
     if settings.boxName
