@@ -112,7 +112,7 @@ pushBox = ->
     settings = JSON.parse( fs.readFileSync "#{dir}/.swbox", "utf8" )
     if settings.boxName
       boxName = settings.boxName
-      command = """rsync -avx --itemize-changes --delete-excluded --exclude='.DS_Store' -e 'ssh -o "NumberOfPasswordPrompts 0"' #{dir}/ #{boxName}@box.scraperwiki.com:."""
+      command = """rsync -avx --itemize-changes --delete-excluded --exclude='.DS_Store' -e 'ssh -o "NumberOfPasswordPrompts 0"' "#{dir}/" #{boxName}@box.scraperwiki.com:."""
       exec command, (err, stdout, stderr) ->
         if stderr.match /^Permission denied/
           warn 'Error: Permission denied.'
