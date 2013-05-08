@@ -34,7 +34,7 @@ mountBox = ->
   if args.length == 1
     boxName = args[0]
     path = "/tmp/ssh/#{boxName}"
-    exec "mkdir -p #{path} && sshfs #{boxName}@box.scraperwiki.com:. #{path} -ovolname=#{boxName} -oBatchMode=yes -oworkaround=rename", {timeout: 5000}, (err, stdout, stderr) ->
+    exec "mkdir -p #{path} && sshfs #{boxName}@box.scraperwiki.com:. #{path} -ovolname=#{boxName} -oBatchMode=yes -oworkaround=rename,noappledouble", {timeout: 5000}, (err, stdout, stderr) ->
       if err?
         if "#{err}".indexOf('sshfs: command not found') > -1
           warn 'sshfs is not installed!'
