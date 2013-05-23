@@ -23,6 +23,12 @@ Supports two alternative workflows:
 
 `swbox help` – Show documentation
 
+## Examples
+
+`swbox clone fegy5tq` – Makes a local copy of fegy5tq@box.scraperwiki.com
+
+`swbox clone g6ut126@free` - Makes a local copy of g6ut126@free.scraperwiki.com
+
 ## Coming soon
 
 `swbox watch` (from inside a local clone) – Synchronise changes to the local clone *as they are made*
@@ -52,6 +58,10 @@ Mounting boxes as local drives requires **Fuse** and **SSHFS**. Both are availab
 The `swbox` command line client requires [Node.js](http://nodejs.org) and [CoffeeScript](http://coffeescript.org) to be installed. `swbox update` requires Git.
 
 ## Changelog
+
+#### 0.0.7 – heart shaped box
+
+* `<boxName>` can now include an optional `@boxServer` suffix, allowing you to clone and mount boxes on free.scraperwiki.com and ds.scraperwiki.com (eg: via `swbox clone abcd123@free` or `swbox mount wxyz789@ds`)
 
 #### 0.0.6 – junction box
 

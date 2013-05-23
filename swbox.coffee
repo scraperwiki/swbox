@@ -2,7 +2,7 @@
 
 fs = require 'fs' 
 
-__version = '0.0.6'
+__version = '0.0.7'
 
 exec = require('child_process').exec
 
@@ -28,13 +28,16 @@ showHelp = ->
     write '    swbox update             Download latest version of swbox'
     write '    swbox -v|--version       Show version & license info'
     write '    swbox help               Show this documentation'
+    write 'Examples:'
+    write '    swbox clone fegy5tq          Makes a local copy of fegy5tq@box.scraperwiki.com'
+    write '    swbox clone g6ut126@free     Makes a local copy of g6ut126@free.scraperwiki.com'
 
 mountBox = ->
   args = process.argv[3..]
   if args.length == 1
-    boxName = args[0]
+    [ boxName, boxServer ] = getBoxNameAndServer(args)
     path = "/tmp/ssh/#{boxName}"
-    exec "mkdir -p #{path} && sshfs #{boxName}@box.scraperwiki.com:. #{path} -ovolname=#{boxName} -oBatchMode=yes -oworkaround=rename,noappledouble", {timeout: 5000}, (err, stdout, stderr) ->
+    exec "mkdir -p #{path} && sshfs #{boxName}@#{boxServer}.scraperwiki.com:. #{path} -ovolname=#{boxName} -oBatchMode=yes -oworkaround=rename,noappledouble", {timeout: 5000}, (err, stdout, stderr) ->
       if err?
         if "#{err}".indexOf('sshfs: command not found') > -1
           warn 'sshfs is not installed!'
@@ -58,7 +61,7 @@ mountBox = ->
 unmountBox = ->
   args = process.argv[3..]
   if args.length == 1
-    boxName = args[0]
+    [ boxName, boxServer ] = getBoxNameAndServer(args)
     path = "/tmp/ssh/#{boxName}"
     exec "umount #{path}", (err, stdout, stderr) ->
       if err?
@@ -77,10 +80,10 @@ unmountBox = ->
 cloneBox = ->
   args = process.argv[3..]
   if args.length == 1
-    boxName = args[0]
-    write "Cloning box ‘#{boxName}’ to directory #{process.cwd()}/#{boxName}..."
+    [ boxName, boxServer ] = getBoxNameAndServer(args)
+    write "Cloning #{boxName}@#{boxServer}.scraperwiki.com into #{process.cwd()}/#{boxName}..."
     # command = """scp -r -o "BatchMode yes" #{boxName}@box.scraperwiki.com:~ #{process.cwd()}/#{destination}"""
-    command = """rsync -avx --delete-excluded --exclude='.DS_Store' -e 'ssh -o "NumberOfPasswordPrompts 0"' #{boxName}@box.scraperwiki.com:. #{process.cwd()}/#{boxName}"""
+    command = """rsync -avx --delete-excluded --exclude='.DS_Store' -e 'ssh -o "NumberOfPasswordPrompts 0"' #{boxName}@#{boxServer}.scraperwiki.com:. #{process.cwd()}/#{boxName}"""
     exec command, (err, stdout, stderr) ->
       if stderr.match /^Permission denied/
         warn 'Error: Permission denied.'
@@ -93,6 +96,7 @@ cloneBox = ->
         write "Saving settings into #{boxName}/.swbox..."
         settings =
           boxName: boxName
+          boxServer: boxServer
         fs.writeFileSync "#{boxName}/.swbox", JSON.stringify(settings, null, 2)
         write "Box cloned to #{boxName}"
   else
@@ -112,17 +116,18 @@ pushBox = ->
     settings = JSON.parse( fs.readFileSync "#{dir}/.swbox", "utf8" )
     if settings.boxName
       boxName = settings.boxName
-      command = """rsync -avx --itemize-changes --delete-excluded --exclude='.DS_Store' -e 'ssh -o "NumberOfPasswordPrompts 0"' "#{dir}/" #{boxName}@box.scraperwiki.com:."""
+      boxServer = settings.boxServer or 'box'
+      command = """rsync -avx --itemize-changes --delete-excluded --exclude='.DS_Store' -e 'ssh -o "NumberOfPasswordPrompts 0"' "#{dir}/" #{boxName}@#{boxServer}.scraperwiki.com:."""
       exec command, (err, stdout, stderr) ->
         if stderr.match /^Permission denied/
           warn 'Error: Permission denied.'
           warn "The box ‘#{boxName}’ might not exist, or your SSH key might not be associated with it."
-          warn 'Make sure you can see the box in your Data Hub on http://x.scraperwiki.com'
+          warn 'Make sure you can see the box in your Data Hub on http://beta.scraperwiki.com'
         else if err or stderr
           warn "Unexpected error:"
           warn err or stderr
         else
-          write "Applying changes from #{dir}/ to #{boxName}@box.scraperwiki.com..."
+          write "Applying changes from #{dir}/ to #{boxName}@#{boxServer}.scraperwiki.com..."
           rsyncSummary stdout
     else
       warn "Error: Settings file at #{dir}/.swbox does not contain a boxName value!"
@@ -141,6 +146,13 @@ rsyncSummary = (output) ->
       write "\u001b[33m▼ #{file}\u001b[0m"
     else if line.indexOf('*deleting') == 0
       write "\u001b[31m– #{file}\u001b[0m"
+
+getBoxNameAndServer = (args) ->
+  # takes a command line argument list, and returns a boxName and boxServer
+  boxNameAndServer = args[0].replace(/@$/, '').split('@')
+  if boxNameAndServer.length == 1
+    boxNameAndServer.push('box')
+  return [ boxNameAndServer[0], boxNameAndServer[1] ]
 
 update = ->
   exec "cd #{__dirname}; git pull", (err, stdout, stderr) ->
