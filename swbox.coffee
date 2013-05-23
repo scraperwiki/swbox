@@ -20,11 +20,11 @@ showHelp = ->
     write 'swbox:  A command line interface for interacting with ScraperWiki boxes'
     write 'Usage:  swbox command <required_argument> [optional_argument]'
     write 'Commands:'
-    write '    swbox mount <boxName>    Mount <boxName> as an sshfs drive'
-    write '    swbox unmount <boxName>  Unmount the <boxName> sshfs drive'
     write '    swbox clone <boxName>    Make a local copy of the entire contents of <boxName>'
     write '                               (into a directory called <boxName> in the current working directory)'
     write '    swbox push               Push changes from a local clone of a box back up to the original box'
+    write '    swbox mount <boxName>    Mount <boxName> as an sshfs drive'
+    write '    swbox unmount <boxName>  Unmount the <boxName> sshfs drive'
     write '    swbox update             Download latest version of swbox'
     write '    swbox -v|--version       Show version & license info'
     write '    swbox help               Show this documentation'
@@ -42,7 +42,7 @@ mountBox = ->
         else if "#{err}".indexOf('remote host has disconnected') > -1
           warn 'Error: The box server did not respond.'
           warn "The box ‘#{boxName}’ might not exist, or your SSH key might not be associated with it."
-          warn 'Make sure you can see the box in your Data Hub on http://x.scraperwiki.com'
+          warn 'Make sure you can see the box in your Data Hub on http://beta.scraperwiki.com'
           exec "rmdir #{path}", (err) ->
             if err? then warn "Additionally, we enountered an error while removing the temporary directory at #{path}"
         else
@@ -85,7 +85,7 @@ cloneBox = ->
       if stderr.match /^Permission denied/
         warn 'Error: Permission denied.'
         warn "The box ‘#{boxName}’ might not exist, or your SSH key might not be associated with it."
-        warn 'Make sure you can see the box in your Data Hub on http://x.scraperwiki.com'
+        warn 'Make sure you can see the box in your Data Hub on http://beta.scraperwiki.com'
       else if err or stderr
         warn "Unexpected error:"
         warn err or stderr
