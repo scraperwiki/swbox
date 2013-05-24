@@ -20,14 +20,13 @@ showHelp = ->
     write 'swbox:  A command line interface for interacting with ScraperWiki boxes'
     write 'Usage:  swbox command <required_argument> [optional_argument]'
     write 'Commands:'
-    write '    swbox clone <boxName>    Make a local copy of the entire contents of <boxName>'
-    write '                               (into a directory called <boxName> in the current working directory)'
-    write '    swbox push               Push changes from a local clone of a box back up to the original box'
-    write '    swbox mount <boxName>    Mount <boxName> as an sshfs drive'
-    write '    swbox unmount <boxName>  Unmount the <boxName> sshfs drive'
-    write '    swbox update             Download latest version of swbox'
-    write '    swbox -v|--version       Show version & license info'
-    write '    swbox help               Show this documentation'
+    write '    swbox clone <boxName>        Make a local copy of the entire contents of <boxName>'
+    write '    swbox push [--preview]       Push changes from a local clone back up to the original box'
+    write '    swbox mount <boxName>        Mount <boxName> as an sshfs drive'
+    write '    swbox unmount <boxName>      Unmount the <boxName> sshfs drive'
+    write '    swbox update                 Download latest version of swbox'
+    write '    swbox [-v|--version]         Show version & license info'
+    write '    swbox help                   Show this documentation'
     write 'Examples:'
     write '    swbox clone fegy5tq          Makes a local copy of fegy5tq@box.scraperwiki.com'
     write '    swbox clone g6ut126@free     Makes a local copy of g6ut126@free.scraperwiki.com'
@@ -81,9 +80,16 @@ cloneBox = ->
   args = process.argv[3..]
   if args.length == 1
     [ boxName, boxServer ] = getBoxNameAndServer(args)
+    options = [
+      '--archive', # enable recursion and preserve file metadata
+      '--verbose', # chatty
+      '--one-file-system', # don't cross filesystem boundaries
+      "--exclude='.DS_Store'",
+      '--delete-excluded', # actually remove excluded files on box
+      '-e \'ssh -o "NumberOfPasswordPrompts 0"\'' # use ssh keys only
+    ]
     write "Cloning #{boxName}@#{boxServer}.scraperwiki.com into #{process.cwd()}/#{boxName}..."
-    # command = """scp -r -o "BatchMode yes" #{boxName}@box.scraperwiki.com:~ #{process.cwd()}/#{destination}"""
-    command = """rsync -avx --delete-excluded --exclude='.DS_Store' -e 'ssh -o "NumberOfPasswordPrompts 0"' #{boxName}@#{boxServer}.scraperwiki.com:. #{process.cwd()}/#{boxName}"""
+    command = """rsync #{options.join(' ')} #{boxName}@#{boxServer}.scraperwiki.com:. #{process.cwd()}/#{boxName}"""
     exec command, (err, stdout, stderr) ->
       if stderr.match /^Permission denied/
         warn 'Error: Permission denied.'
@@ -103,7 +109,6 @@ cloneBox = ->
     write 'Please supply a <boxName> argument'
     write 'Usage:'
     write '    swbox clone <boxName>    Make a local copy of the entire contents of <boxName>'
-    write '                             (into a directory called <boxName> in the current working directory)'
 
 pushBox = ->
   dir = process.cwd()
@@ -117,7 +122,18 @@ pushBox = ->
     if settings.boxName
       boxName = settings.boxName
       boxServer = settings.boxServer or 'box'
-      command = """rsync -avx --itemize-changes --delete-excluded --exclude='.DS_Store' -e 'ssh -o "NumberOfPasswordPrompts 0"' "#{dir}/" #{boxName}@#{boxServer}.scraperwiki.com:."""
+      options = [
+        '--archive', # enable recursion and preserve file metadata
+        '--verbose', # chatty
+        '--one-file-system', # don't cross filesystem boundaries
+        '--itemize-changes', # show what's changed
+        "--exclude='.DS_Store'",
+        '--delete-excluded', # actually remove excluded files on box
+        '-e \'ssh -o "NumberOfPasswordPrompts 0"\'' # use ssh keys only
+      ]
+      if '--preview' in process.argv
+        options.push('--dry-run')
+      command = """rsync #{options.join(' ')} "#{dir}/" #{boxName}@#{boxServer}.scraperwiki.com:."""
       exec command, (err, stdout, stderr) ->
         if stderr.match /^Permission denied/
           warn 'Error: Permission denied.'
@@ -127,7 +143,10 @@ pushBox = ->
           warn "Unexpected error:"
           warn err or stderr
         else
-          write "Applying changes from #{dir}/ to #{boxName}@#{boxServer}.scraperwiki.com..."
+          if '--preview' in process.argv
+            write "Previewing changes from #{dir}/ to #{boxName}@#{boxServer}.scraperwiki.com..."
+          else
+            write "Applying changes from #{dir}/ to #{boxName}@#{boxServer}.scraperwiki.com..."
           rsyncSummary stdout
     else
       warn "Error: Settings file at #{dir}/.swbox does not contain a boxName value!"
