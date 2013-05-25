@@ -1,11 +1,13 @@
 # swbox
 
-A command line interface for interacting with ScraperWiki boxes.
+A command line interface for **editing files from your box, on your local machine**.
 
-Supports two alternative workflows, allowing you to edit files on your box using all your usual (local) applications.
+The perfect partner if you're developing ScraperWiki tools, and want to **use your normal text editor** like TextMate or Sublime Text.
 
-1. Copying the remote box files to your local machine, then pushing changes.
-2. Mounting the remote box as a local filesystem, using SSHFS.
+Supports two alternative workflows:
+
+1. **Copying** the remote box files to your local machine, then pushing changes.
+2. **Mounting** the remote box as a local filesystem, using SSHFS.
 
 ## Examples
 
