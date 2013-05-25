@@ -2,26 +2,10 @@
 
 A command line interface for interacting with ScraperWiki boxes.
 
-Supports two alternative workflows:
+Supports two alternative workflows, allowing you to edit files on your box using all your usual (local) applications.
 
 1. Copying the remote box files to your local machine, then pushing changes.
 2. Mounting the remote box as a local filesystem, using SSHFS.
-
-## Functions
-
-`swbox clone <boxName>` – Make a local copy of the entire contents of `<boxName>`
-
-`swbox push` (from inside a local clone) – Push changes from a local clone of a box back up to the original box
-
-`swbox mount <boxName>` – Mount `<boxName>` as an sshfs drive on your Mac
-
-`swbox unmount <boxName>` – Unmount the `<boxName>` sshfs drive
-
-`swbox update` – Download latest version of swbox
-
-`swbox [-v|--version]` – Show version & license info
-
-`swbox help` – Show documentation
 
 ## Examples
 
@@ -29,9 +13,7 @@ Supports two alternative workflows:
 
 `swbox clone g6ut126@free` - Makes a local copy of g6ut126@free.scraperwiki.com
 
-## Coming soon
-
-`swbox watch` (from inside a local clone) – Synchronise changes to the local clone *as they are made*
+`swbox mount fegy5tq` - Mounts fegy5tq@box.scraperwiki.com as a local filesystem
 
 ## How to use
 
