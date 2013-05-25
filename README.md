@@ -59,6 +59,10 @@ The `swbox` command line client requires [Node.js](http://nodejs.org) and [Coffe
 
 ## Changelog
 
+#### 0.0.8 – post box
+
+* `swbox push --preview` will show a preview of what would be created/updated/deleted, without changing anything on the remote box.
+
 #### 0.0.7 – heart shaped box
 
 * `<boxName>` can now include an optional `@boxServer` suffix, allowing you to clone and mount boxes on free.scraperwiki.com and ds.scraperwiki.com (eg: via `swbox clone abcd123@free` or `swbox mount wxyz789@ds`)
