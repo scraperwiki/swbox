@@ -2,7 +2,7 @@
 
 fs = require 'fs' 
 
-__version = '0.0.8'
+__version = '0.0.9'
 
 exec = require('child_process').exec
 
@@ -44,7 +44,7 @@ mountBox = ->
         else if "#{err}".indexOf('remote host has disconnected') > -1
           warn 'Error: The box server did not respond.'
           warn "The box ‘#{boxName}’ might not exist, or your SSH key might not be associated with it."
-          warn 'Make sure you can see the box in your Data Hub on http://beta.scraperwiki.com'
+          warn 'Make sure you can see the box in your Data Hub on http://scraperwiki.com'
           exec "rmdir #{path}", (err) ->
             if err? then warn "Additionally, we enountered an error while removing the temporary directory at #{path}"
         else
@@ -94,10 +94,13 @@ cloneBox = ->
       if stderr.match /^Permission denied/
         warn 'Error: Permission denied.'
         warn "The box ‘#{boxName}’ might not exist, or your SSH key might not be associated with it."
-        warn 'Make sure you can see the box in your Data Hub on http://beta.scraperwiki.com'
-      else if err or stderr
+        warn 'Make sure you can see the box in your Data Hub on http://scraperwiki.com'
+      else if err
         warn "Unexpected error:"
-        warn err or stderr
+        warn err
+      else if stderr and not stderr.match /Permanently added/
+        warn "Unexpected error:"
+        warn stderr
       else
         write "Saving settings into #{boxName}/.swbox..."
         settings =
@@ -138,10 +141,13 @@ pushBox = ->
         if stderr.match /^Permission denied/
           warn 'Error: Permission denied.'
           warn "The box ‘#{boxName}’ might not exist, or your SSH key might not be associated with it."
-          warn 'Make sure you can see the box in your Data Hub on http://beta.scraperwiki.com'
-        else if err or stderr
+          warn 'Make sure you can see the box in your Data Hub on http://scraperwiki.com'
+        else if err
           warn "Unexpected error:"
-          warn err or stderr
+          warn err
+        else if stderr and not stderr.match /Permanently added/
+          warn "Unexpected error:"
+          warn stderr
         else
           if '--preview' in process.argv
             write "Previewing changes from #{dir}/ to #{boxName}@#{boxServer}.scraperwiki.com..."

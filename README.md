@@ -43,6 +43,11 @@ The `swbox` command line client requires [Node.js](http://nodejs.org) and [Coffe
 
 ## Changelog
 
+#### 0.0.9 – set-top box
+
+* Rsync reports of "Permanently added [url] to the list of known hosts" no longer fool swbox into thinking the `push`/`clone` operation failed.
+* Mentions of "beta.scraperwiki.com" changed to "scraperwiki.com"
+
 #### 0.0.8 – post box
 
 * `swbox push --preview` will show a preview of what would be created/updated/deleted, without changing anything on the remote box.
@@ -68,11 +73,14 @@ The `swbox` command line client requires [Node.js](http://nodejs.org) and [Coffe
 * `swbox clone` command to clone an entire box's contents to your local filesystem
 
 #### 0.0.3 – cereal box
+
 * added `-oworkaround=rename` to sshfs options, to allow `rsync` and `git` to rename/update files
 
 #### 0.0.2 – cardboard box
+
 * `swbox update` command to download the latest version of swbox
 
 #### 0.0.1 – Initial release
+
 * mounting and unmounting boxes as sshfs drives
 * license, help and docs
