@@ -1,0 +1,19 @@
+{
+  "name": "swbox",
+  "version": "0.0.9",
+  "description": "A command line interface for editing files from your ScraperWiki box, on your local machine.",
+  "main": "swbox.js",
+  "scripts": {
+    "prepublish": "{ echo '#!/usr/bin/env node'; coffee -p swbox.coffee;} > tmp.js && mv tmp.js swbox.js && chmod +x swbox.js",
+
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/scraperwiki/swbox.git"
+  },
+  "author": "ScraperWiki Limited",
+  "license": "AGPL",
+  "readmeFilename": "README.md",
+  "gitHead": "a17dd2f6565ec026c450fd101a65a8829dc8bda2"
+}
