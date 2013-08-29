@@ -23,7 +23,7 @@ Supports two alternative workflows:
 
     ```shell
     cd ~ # feel free to change this directory 
-    git clone git://github.com/zarino/swbox.git
+    git clone git://github.com/scraperwiki/swbox.git
     cd swbox
     ```
 
