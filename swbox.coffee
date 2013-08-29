@@ -24,6 +24,7 @@ showHelp = ->
     write '    swbox push [--preview]       Push changes from a local clone back up to the original box'
     write '    swbox mount <boxName>        Mount <boxName> as an sshfs drive'
     write '    swbox unmount <boxName>      Unmount the <boxName> sshfs drive'
+    write '    swbox test                   Run the tests for this tool'
     write '    swbox update                 Download latest version of swbox'
     write '    swbox [-v|--version]         Show version & license info'
     write '    swbox help                   Show this documentation'
@@ -113,15 +114,24 @@ cloneBox = ->
     write 'Usage:'
     write '    swbox clone <boxName>    Make a local copy of the entire contents of <boxName>'
 
-pushBox = ->
+
+nearest = (filename) ->
+  """Walk up the directory hierarchy until we find a directory
+  containing a file called `filename`. The directory is returned
+  as a string. If the file is not found an empty string is
+  returned."""
+
   dir = process.cwd()
   walkUp = ->
-    dir = dir.split('/').reverse()[1..].reverse().join '/'
-  # Loop up through parent directories until we either
-  # find a .swbox file, or we run out of directories
-  walkUp() until ( dir == '' or fs.existsSync "#{dir}/.swbox" )
+    dir = dir.split('/')[..-2].join '/'
+  walkUp() until ( dir == '' or fs.existsSync "#{dir}/#{filename}" )
+  return dir
+
+pushBox = ->
+  dir = nearest ".swbox"
   if dir
-    settings = JSON.parse( fs.readFileSync "#{dir}/.swbox", "utf8" )
+    swbox = "#{dir}/.swbox"
+    settings = JSON.parse( fs.readFileSync swbox, "utf8" )
     if settings.boxName
       boxName = settings.boxName
       boxServer = settings.boxServer or 'box'
@@ -155,7 +165,7 @@ pushBox = ->
             write "Applying changes from #{dir}/ to #{boxName}@#{boxServer}.scraperwiki.com..."
           rsyncSummary stdout
     else
-      warn "Error: Settings file at #{dir}/.swbox does not contain a boxName value!"
+      warn "Error: Settings file at #{swbox} does not contain a boxName value!"
   else
     warn "Error: I don‘t know where I am!"
     warn "You must run this command from within a local clone of a ScraperWiki box."
@@ -179,6 +189,25 @@ getBoxNameAndServer = (args) ->
     boxNameAndServer.push('box')
   return [ boxNameAndServer[0], boxNameAndServer[1] ]
 
+SELENIUM = "selenium-server-standalone-2.35.0.jar"
+CHROMEDRIVER = "chromedriver"
+
+test = ->
+  se = nearest SELENIUM or nearest "sw/custard/#{SELENIUM}"
+  chromedriver = nearest CHROMEDRIVER or nearest "sw/custard/#{CHROMEDRIVER}"
+  if not se or not chromedriver
+    if not se
+      warn "Could not find #{SELENIUM}"
+    if not chromedriver
+      warn "Could not find #{CHROMEDRIVER}"
+    process.exit 2
+  cmd =  "java -jar #{se} -Dwebdriver.chrome.driver=#{chromedriver}"
+  child = spawn 'java', ['-jar', se, "-Dwebdriver.chrome.driver=#{chromedriver}"]
+  child.stdout.pipe process.stdout
+  child.stderr.pipe process.stderr
+  write 'Selenium started'
+
+
 update = ->
   exec "cd #{__dirname}; git pull", (err, stdout, stderr) ->
     if "#{stdout}".indexOf 'Already up-to-date' == 0
@@ -195,6 +224,7 @@ swbox =
   clone: cloneBox
   push: pushBox
   help: showHelp
+  test: test
   update: update
   '--help': showHelp
   '-v': showVersion
