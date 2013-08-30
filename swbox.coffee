@@ -189,27 +189,64 @@ getBoxNameAndServer = (args) ->
     boxNameAndServer.push('box')
   return [ boxNameAndServer[0], boxNameAndServer[1] ]
 
-SELENIUM = "selenium-server-standalone-2.35.0.jar"
-CHROMEDRIVER = "chromedriver"
+selenium_paths = [
+  "selenium-server-standalone-2.35.0.jar",
+  "sw/selenium-server-standalone-2.35.0.jar",
+  "sw/custard/selenium-server-standalone-2.35.0.jar"
+]
+chromedriver_paths = [
+  "chromedriver",
+  "sw/chromedriver",
+  "sw/custard/chromedriver"
+]
+
+getNearestSelenium = ->
+  ret = null
+  for selenium_path in selenium_paths
+    path = nearest(selenium_path)
+    if path
+      ret = "#{path}/#{selenium_path}"
+      break
+  return ret
+
+getNearestChromedriver = ->
+  ret = null
+  for chromedriver_path in chromedriver_paths
+    path = nearest(chromedriver_path)
+    if path
+      ret = "#{path}/#{chromedriver_path}"
+      break
+  return ret
 
 test = ->
   test_dir = nearest "test"
   if not test_dir
-    warn "No tests found. Put them in your box, in a directory called ‘test’."
+    warn "No tests found. Swbox expects Mocha tests to be placed in this box's /test directory."
     process.exit 2
-  se_dir = nearest SELENIUM or nearest "sw/#{SELENIUM}" or nearest "sw/custard/#{SELENIUM}"
-  cd_dir = nearest CHROMEDRIVER or nearest "sw/#{CHROMEDRIVER}" or nearest "sw/custard/#{CHROMEDRIVER}"
-  if not se or not chromedriver
-    if not se_dir
-      warn "Could not find #{SELENIUM}"
-    if not cd_dir
-      warn "Could not find #{CHROMEDRIVER}"
+  selenium_path = getNearestSelenium()
+  chromedriver_path = getNearestChromedriver()
+  if not selenium_path
+    warn "#{selenium_paths[0]} not found. Download it from http://docs.seleniumhq.org/download/ and place it in any of this directory's parents."
     process.exit 2
-  child = spawn 'java', ['-jar', "#{se_dir}/#{SELENIUM}", "-Dwebdriver.chrome.driver=#{cd_dir}/#{CHROMEDRIVER}"]
+  if not chromedriver_path
+    warn "chromedriver not found. Download it from http://docs.seleniumhq.org/download/ and place it in any of this directory's parents."
+    process.exit 2
+  child = spawn 'java', ['-jar', "#{selenium_path}", "-Dwebdriver.chrome.driver=#{chromedriver_path}"]
+  # child.stdout.pipe process.stdout
+  # child.stderr.pipe process.stderr
+  child.stderr.on 'data', (data) ->
+    if "#{data}".indexOf('Selenium is already running') > -1
+      write 'Selenium already running'
+      mocha()
+  child.stdout.on 'data', (data) ->
+    if "#{data}".indexOf('Started org.openqa.jetty.jetty.Server') > -1
+      write 'Selenium started'
+      mocha()
+
+mocha = ->
+  child = spawn 'mocha', ['test']
   child.stdout.pipe process.stdout
   child.stderr.pipe process.stderr
-  write 'Selenium starting'
-
 
 update = ->
   exec "cd #{__dirname}; git pull", (err, stdout, stderr) ->
