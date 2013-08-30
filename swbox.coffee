@@ -14,7 +14,7 @@ warn = (text) ->
 
 showVersion = ->
   write "swbox #{__version}"
-  write '© Zarino Zappia, AGPL Licensed'
+  write '© ScraperWiki Limited, AGPL Licensed'
 
 showHelp = ->
     write 'swbox:  A command line interface for interacting with ScraperWiki boxes'
