@@ -193,18 +193,22 @@ SELENIUM = "selenium-server-standalone-2.35.0.jar"
 CHROMEDRIVER = "chromedriver"
 
 test = ->
-  se = nearest SELENIUM or nearest "sw/#{SELENIUM}" or nearest "sw/custard/#{SELENIUM}"
-  chromedriver = nearest CHROMEDRIVER or nearest "sw/#{CHROMEDRIVER}" or nearest "sw/custard/#{CHROMEDRIVER}"
+  test_dir = nearest "test"
+  if not test_dir
+    warn "No tests found. Put them in your box, in a directory called ‘test’."
+    process.exit 2
+  se_dir = nearest SELENIUM or nearest "sw/#{SELENIUM}" or nearest "sw/custard/#{SELENIUM}"
+  cd_dir = nearest CHROMEDRIVER or nearest "sw/#{CHROMEDRIVER}" or nearest "sw/custard/#{CHROMEDRIVER}"
   if not se or not chromedriver
-    if not se
+    if not se_dir
       warn "Could not find #{SELENIUM}"
-    if not chromedriver
+    if not cd_dir
       warn "Could not find #{CHROMEDRIVER}"
     process.exit 2
-  child = spawn 'java', ['-jar', "#{se}/#{SELENIUM}", "-Dwebdriver.chrome.driver=#{chromedriver}/#{CHROMEDRIVER}"]
+  child = spawn 'java', ['-jar', "#{se_dir}/#{SELENIUM}", "-Dwebdriver.chrome.driver=#{cd_dir}/#{CHROMEDRIVER}"]
   child.stdout.pipe process.stdout
   child.stderr.pipe process.stderr
-  write 'Selenium started'
+  write 'Selenium starting'
 
 
 update = ->
