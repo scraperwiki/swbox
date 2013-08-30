@@ -3,9 +3,11 @@
   "version": "0.0.9",
   "description": "A command line interface for editing files from your ScraperWiki box, on your local machine.",
   "main": "swbox.js",
+  "dependencies": {
+    "mocha": "1.9.0"
+  },
   "scripts": {
     "prepublish": "{ echo '#!/usr/bin/env node'; coffee -p swbox.coffee;} > tmp.js && mv tmp.js swbox.js && chmod +x swbox.js",
-
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

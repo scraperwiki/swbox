@@ -1,6 +1,7 @@
 #!/usr/bin/env coffee
 
-fs = require 'fs' 
+fs = require 'fs'
+Mocha = require 'mocha'
 
 __version = '0.0.9'
 
@@ -24,7 +25,7 @@ showHelp = ->
     write '    swbox push [--preview]       Push changes from a local clone back up to the original box'
     write '    swbox mount <boxName>        Mount <boxName> as an sshfs drive'
     write '    swbox unmount <boxName>      Unmount the <boxName> sshfs drive'
-    write '    swbox test                   Run the tests for this tool'
+    write '    swbox test                   Run the tests inside this box'
     write '    swbox update                 Download latest version of swbox'
     write '    swbox [-v|--version]         Show version & license info'
     write '    swbox help                   Show this documentation'
@@ -220,7 +221,9 @@ getNearestChromedriver = ->
 
 test = ->
   test_dir = nearest "test"
-  if not test_dir
+  if test_dir
+    test_dir = "#{test_dir}/test"
+  else
     warn "No tests found. Swbox expects Mocha tests to be placed in this box's /test directory."
     process.exit 2
   selenium_path = getNearestSelenium()
@@ -231,22 +234,28 @@ test = ->
   if not chromedriver_path
     warn "chromedriver not found. Download it from http://docs.seleniumhq.org/download/ and place it in any of this directory's parents."
     process.exit 2
+
   child = spawn 'java', ['-jar', "#{selenium_path}", "-Dwebdriver.chrome.driver=#{chromedriver_path}"]
-  # child.stdout.pipe process.stdout
-  # child.stderr.pipe process.stderr
+  
+  # Either a new selenium server will start, or Java will grumle about one already running.
+  # Both cases are fine, so we scan all output for those two messages, and runMocha() once we see them.
   child.stderr.on 'data', (data) ->
     if "#{data}".indexOf('Selenium is already running') > -1
-      write 'Selenium already running'
-      mocha()
+      runMocha(test_dir)
   child.stdout.on 'data', (data) ->
     if "#{data}".indexOf('Started org.openqa.jetty.jetty.Server') > -1
-      write 'Selenium started'
-      mocha()
+      runMocha(test_dir)
 
-mocha = ->
-  child = spawn 'mocha', ['test']
-  child.stdout.pipe process.stdout
-  child.stderr.pipe process.stderr
+runMocha = (test_dir) ->
+  mocha = new Mocha
+    reporter: 'spec'
+
+  for file in fs.readdirSync(test_dir)
+    if file.substr(-3) == '.js' or file.substr(-7) == '.coffee'
+      mocha.addFile "#{test_dir}/#{file}"
+
+  mocha.run (failures) ->
+    process.exit failures
 
 update = ->
   exec "cd #{__dirname}; git pull", (err, stdout, stderr) ->
