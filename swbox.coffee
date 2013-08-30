@@ -4,7 +4,7 @@ fs = require 'fs'
 
 __version = '0.0.9'
 
-exec = require('child_process').exec
+{spawn, exec} = require 'child_process'
 
 write = (text) ->
   process.stdout.write "#{text}\n"
@@ -201,8 +201,7 @@ test = ->
     if not chromedriver
       warn "Could not find #{CHROMEDRIVER}"
     process.exit 2
-  cmd =  "java -jar #{se} -Dwebdriver.chrome.driver=#{chromedriver}"
-  child = spawn 'java', ['-jar', se, "-Dwebdriver.chrome.driver=#{chromedriver}"]
+  child = spawn 'java', ['-jar', "#{se}/#{SELENIUM}", "-Dwebdriver.chrome.driver=#{chromedriver}/#{CHROMEDRIVER}"]
   child.stdout.pipe process.stdout
   child.stderr.pipe process.stderr
   write 'Selenium started'
