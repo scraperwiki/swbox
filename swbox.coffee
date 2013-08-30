@@ -193,8 +193,8 @@ SELENIUM = "selenium-server-standalone-2.35.0.jar"
 CHROMEDRIVER = "chromedriver"
 
 test = ->
-  se = nearest SELENIUM or nearest "sw/custard/#{SELENIUM}"
-  chromedriver = nearest CHROMEDRIVER or nearest "sw/custard/#{CHROMEDRIVER}"
+  se = nearest SELENIUM or nearest "sw/#{SELENIUM}" or nearest "sw/custard/#{SELENIUM}"
+  chromedriver = nearest CHROMEDRIVER or nearest "sw/#{CHROMEDRIVER}" or nearest "sw/custard/#{CHROMEDRIVER}"
   if not se or not chromedriver
     if not se
       warn "Could not find #{SELENIUM}"
