@@ -41,6 +41,22 @@ Mounting boxes as local drives requires **Fuse** and **SSHFS**. Both are availab
 
 The `swbox` command line client requires [Node.js](http://nodejs.org) and [CoffeeScript](http://coffeescript.org) to be installed. `swbox update` requires Git.
 
+## Developing swbox
+
+If you are developing `swbox` we recommend that you run the following from the directory
+containing your git clone:
+
+```npm link```
+
+This will put the command `swbox` in the usual location where npm installs binaries (which
+should already be on your PATH), and symlink it so that whenever you change this directory,
+those changes are live.
+
+You still need to compile the CoffeeScript to JavaScript before testing a change to swbox,
+do that with
+
+```npm install```
+
 ## Changelog
 
 #### 0.0.9 – set-top box

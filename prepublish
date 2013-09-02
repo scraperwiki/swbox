@@ -1,0 +1,9 @@
+#!/bin/sh
+
+for filename in *.coffee
+do
+    JS=${filename%.coffee}.js
+    { echo '#!/usr/bin/env node'; coffee -p "$filename";} > tmp.js &&
+    mv tmp.js "$JS" &&
+    chmod +x "$JS"
+done
