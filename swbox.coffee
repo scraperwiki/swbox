@@ -237,7 +237,7 @@ test = ->
 
   child = spawn 'java', ['-jar', "#{selenium_path}", "-Dwebdriver.chrome.driver=#{chromedriver_path}"]
   
-  # Either a new selenium server will start, or Java will grumle about one already running.
+  # Either a new selenium server will start, or Java will grumble about one already running.
   # Both cases are fine, so we scan all output for those two messages, and runMocha() once we see them.
   child.stderr.on 'data', (data) ->
     if "#{data}".indexOf('Selenium is already running') > -1
