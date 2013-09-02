@@ -243,7 +243,7 @@ test = ->
     if err.code is 'ENOENT'
       warn "java not found. Please install it. (sorry)"
     else
-      raise err
+      throw err
   child.stderr.on 'data', (data) ->
     if "#{data}".indexOf('Selenium is already running') > -1
       runMocha(test_dir)
