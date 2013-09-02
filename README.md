@@ -46,16 +46,19 @@ The `swbox` command line client requires [Node.js](http://nodejs.org) and [Coffe
 If you are developing `swbox` we recommend that you run the following from the directory
 containing your git clone:
 
-```npm link```
+```
+./prepublish
+npm link
+```
 
 This will put the command `swbox` in the usual location where npm installs binaries (which
 should already be on your PATH), and symlink it so that whenever you change this directory,
 those changes are live.
 
 You still need to compile the CoffeeScript to JavaScript before testing a change to swbox,
-do that with
+do that with:
 
-```npm install```
+```./prepublish```
 
 If you want to use this local in-development version of swbox with a box, then go to the
 box's directory and use:
