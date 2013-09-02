@@ -2,6 +2,8 @@
 
 fs = require 'fs'
 Mocha = require 'mocha'
+# Magically, means that mocha can run tests written in CoffeeScript.
+require 'coffee-script'
 
 __version = '0.0.9'
 
