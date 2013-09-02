@@ -57,6 +57,13 @@ do that with
 
 ```npm install```
 
+If you want to use this local in-development version of swbox with a box, then go to the
+box's directory and use:
+
+```npm link swbox```
+
+Now `swbox = require 'swbox'` will automatically get your local in-development version of swbox.
+
 ## Changelog
 
 #### 0.0.9 – set-top box
