@@ -256,7 +256,7 @@ runMocha = (test_dir) ->
     reporter: 'spec'
 
   for file in fs.readdirSync(test_dir)
-    if file.substr(-3) == '.js' or file.substr(-7) == '.coffee'
+    if /\.(js|coffee)$/.test file
       mocha.addFile "#{test_dir}/#{file}"
 
   mocha.run (failures) ->
