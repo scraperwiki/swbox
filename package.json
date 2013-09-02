@@ -4,7 +4,8 @@
   "description": "A command line interface for editing files from your ScraperWiki box, on your local machine.",
   "main": "swbox.js",
   "dependencies": {
-    "mocha": "1.9.0"
+    "mocha": "1.9.0",
+    "coffee-script": "~1.6.3"
   },
   "scripts": {
     "prepublish": "{ echo '#!/usr/bin/env node'; coffee -p swbox.coffee;} > tmp.js && mv tmp.js swbox.js && chmod +x swbox.js",
