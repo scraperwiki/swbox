@@ -239,6 +239,11 @@ test = ->
   
   # Either a new selenium server will start, or Java will grumble about one already running.
   # Both cases are fine, so we scan all output for those two messages, and runMocha() once we see them.
+  child.on 'error', (err) ->
+    if err.code is 'ENOENT'
+      warn "java not found. Please install it. (sorry)"
+    else
+      raise err
   child.stderr.on 'data', (data) ->
     if "#{data}".indexOf('Selenium is already running') > -1
       runMocha(test_dir)
