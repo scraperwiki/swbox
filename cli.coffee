@@ -249,10 +249,20 @@ test = ->
     else
       throw err
   child.stderr.on 'data', (data) ->
+    if /selenium/.test process.env.SWBOX_DEBUG
+      process.stderr.write data
+    # :todo:(drj) We need to buffer here in case we get
+    # "Selenium is " in one data block and "already running" in
+    # another.
     if "#{data}".indexOf('Selenium is already running') > -1
+      write "Selenium already running"
       runMocha(test_dir)
   child.stdout.on 'data', (data) ->
+    if /selenium/.test process.env.SWBOX_DEBUG
+      process.stdout.write data
+    # :todo:(drj) see :todo: above about buffering.
     if "#{data}".indexOf('Started org.openqa.jetty.jetty.Server') > -1
+      write "Selenium has started running"
       runMocha(test_dir)
 
 runMocha = (test_dir) ->
