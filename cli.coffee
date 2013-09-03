@@ -230,6 +230,7 @@ test = ->
   else
     warn "No tests found. Swbox expects Mocha tests to be placed in this box's /test directory."
     process.exit 2
+
   selenium_path = getNearestSelenium()
   chromedriver_path = getNearestChromedriver()
   if not selenium_path
@@ -268,6 +269,7 @@ test = ->
 runMocha = (test_dir) ->
   mocha = new Mocha
     reporter: 'spec'
+    timeout: 8000
 
   for file in fs.readdirSync(test_dir)
     if /\.(js|coffee)$/.test file
