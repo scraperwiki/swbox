@@ -10,7 +10,7 @@
     "mocha": "1.9.0",
     "coffee-script": "~1.6.3",
     "wd": "~0.1.1",
-    "wd40": "0.0.0"
+    "wd40": "~0.0.0"
   },
   "scripts": {
     "prepublish": "./prepublish",
