@@ -1,9 +1,7 @@
 fs = require 'fs'
-
 wd = require 'wd'
 {wd40, browser} = require 'wd40'
 
-LOGIN_URL = "https://scraperwiki.com/login"
 
 # :todo:(drj) Move "nearest" into an npmjs module.
 nearestDir = (filename) ->
@@ -13,6 +11,7 @@ nearestDir = (filename) ->
   walkUp() until ( dir == '' or fs.existsSync "#{dir}/#{filename}" )
   return dir
 
+
 nearest = (filename) ->
   dir = nearestDir filename
   if dir
@@ -20,14 +19,11 @@ nearest = (filename) ->
   else
     return dir
 
-login = (done) ->
+
+loginSlowly = (username, password, done) ->
   """Login and visit the landing page for the box."""
-  username = process.env.SWBOX_USER
-  password = process.env.SWBOX_PASSWORD
-  dotswbox = nearest '.swbox'
-  swbox = JSON.parse fs.readFileSync dotswbox
-  box = swbox.boxName
-  browser.get LOGIN_URL, ->
+
+  browser.get 'https://scraperwiki.com/login', ->
     wd40.fill '#username', username, (err) ->
       if err
         return done err
@@ -37,16 +33,40 @@ login = (done) ->
         wd40.click '#login', ->
           wd40.waitForMatchingURL /scraperwiki\.com\/?$/, done
 
+
+login = (username, password, done) ->
+  """Login using an XMLHTTP POST request, then visit a dataset page."""
+  """This doesn't currently work."""
+
+  loginJavaScript = """xhr = new XMLHttpRequest();
+cb = arguments[0];
+xhr.open('POST', 'https://scraperwiki.com/login');
+xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+xhr.onreadystatechange = function() { if(xhr.readyState == 4) { cb('xxx' + xhr.responseText); } }
+xhr.send('username=' + encodeURIComponent('#{username}') + '&password=' + encodeURIComponent('#{password}'));"""
+
+  browser.setAsyncScriptTimeout 8000, ->
+    browser.executeAsync loginJavaScript, (err, responseText) ->
+      console.log err, responseText
+      browser.get 'https://scraperwiki.com', done
+
+
 # The swbox module.
 exports.setup = (done) ->
-  user = process.env.SWBOX_USER
+  username = process.env.SWBOX_USER
   password = process.env.SWBOX_PASSWORD
+  dotswbox = nearest '.swbox'
+  swbox = JSON.parse fs.readFileSync dotswbox
+  box = swbox.boxName
 
   # Both things need to be set.
-  if not user or not password
+  if not username or not password
       message = 'Please set $SWBOX_USER and $SWBOX_PASSWORD (in your .profile?)'
       return done Error(message)
 
-  login done
+  wd40.init ->
+    loginSlowly username, password, ->
+      browser.get "https://scraperwiki.com/dataset/#{box}/settings", done
+
 
 exports.browser = browser
