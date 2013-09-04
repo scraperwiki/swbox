@@ -3,6 +3,7 @@
 # The command line utility. Gets installed as swbox by the magic of package.json
 
 fs = require 'fs'
+wd = require 'wd'
 Mocha = require 'mocha'
 # Magically, means that mocha can run tests written in CoffeeScript.
 require 'coffee-script'
@@ -194,12 +195,12 @@ getBoxNameAndServer = (args) ->
     boxNameAndServer.push('box')
   return [ boxNameAndServer[0], boxNameAndServer[1] ]
 
-selenium_paths = [
+SELENIUM_PATHS = [
   "selenium-server-standalone-2.35.0.jar",
   "sw/selenium-server-standalone-2.35.0.jar",
   "sw/custard/selenium-server-standalone-2.35.0.jar"
 ]
-chromedriver_paths = [
+CHROMEDRIVER_PATHS = [
   "chromedriver",
   "sw/chromedriver",
   "sw/custard/chromedriver"
@@ -207,7 +208,7 @@ chromedriver_paths = [
 
 getNearestSelenium = ->
   ret = null
-  for selenium_path in selenium_paths
+  for selenium_path in SELENIUM_PATHS
     path = nearest(selenium_path)
     if path
       ret = "#{path}/#{selenium_path}"
@@ -216,7 +217,7 @@ getNearestSelenium = ->
 
 getNearestChromedriver = ->
   ret = null
-  for chromedriver_path in chromedriver_paths
+  for chromedriver_path in CHROMEDRIVER_PATHS
     path = nearest(chromedriver_path)
     if path
       ret = "#{path}/#{chromedriver_path}"
@@ -231,44 +232,43 @@ test = ->
     warn "No tests found. Swbox expects Mocha tests to be placed in this box's /test directory."
     process.exit 2
 
-  selenium_path = getNearestSelenium()
-  chromedriver_path = getNearestChromedriver()
-  if not selenium_path
-    warn "#{selenium_paths[0]} not found. Download it from http://docs.seleniumhq.org/download/ and place it in any of this directory's parents."
-    process.exit 2
-  if not chromedriver_path
-    warn "chromedriver not found. Download it from http://docs.seleniumhq.org/download/ and place it in any of this directory's parents."
-    process.exit 2
+  # check whether selenium server is running
+  wd.remote().status (err, status) ->
+    if status
+      runMocha(test_dir)
+    else
+      startSelenium (err) ->
+        warn err if err
+        runMocha(test_dir)
 
-  console.log "not starting a selenium server - hope you've got one running!"
-  runMocha(test_dir)
-  return true
+startSelenium = (cb) ->
+  seleniumPath = getNearestSelenium()
+  chromedriverPath = getNearestChromedriver()
+  if not seleniumPath
+    return cb Error "#{SELENIUM_PATHS[0]} not found. Download it from http://docs.seleniumhq.org/download/ and place it in any of this directory's parents."
+  if not chromedriverPath
+    return cb Error "chromedriver not found. Download it from http://docs.seleniumhq.org/download/ and place it in any of this directory's parents."
 
-  child = spawn 'java', ['-jar', "#{selenium_path}", "-Dwebdriver.chrome.driver=#{chromedriver_path}"]
-  
-  # Either a new selenium server will start, or Java will grumble about one already running.
-  # Both cases are fine, so we scan all output for those two messages, and runMocha() once we see them.
+  child = spawn 'java', ['-jar', "#{seleniumPath}", "-Dwebdriver.chrome.driver=#{chromedriverPath}"]
+
+  # We scan all output for messages from java,
+  # and call the callback once we see the "Started" message.
   child.on 'error', (err) ->
     if err.code is 'ENOENT'
-      warn "java not found. Please install it. (sorry)"
+      cb Error "java not found. Please install it. (sorry)"
     else
-      throw err
+      cb err
   child.stderr.on 'data', (data) ->
     if /selenium/.test process.env.SWBOX_DEBUG
       process.stderr.write data
-    # :todo:(drj) We need to buffer here in case we get
-    # "Selenium is " in one data block and "already running" in
-    # another.
-    if "#{data}".indexOf('Selenium is already running') > -1
-      write "Selenium already running"
-      runMocha(test_dir)
   child.stdout.on 'data', (data) ->
     if /selenium/.test process.env.SWBOX_DEBUG
       process.stdout.write data
-    # :todo:(drj) see :todo: above about buffering.
+    # :todo:(drj) We need to buffer here in case we get
+    # "Started " in one data block and "org.openqa..." in another.
     if "#{data}".indexOf('Started org.openqa.jetty.jetty.Server') > -1
       write "Selenium has started running"
-      runMocha(test_dir)
+      cb null
 
 runMocha = (test_dir) ->
   mocha = new Mocha
