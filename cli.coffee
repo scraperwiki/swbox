@@ -240,6 +240,10 @@ test = ->
     warn "chromedriver not found. Download it from http://docs.seleniumhq.org/download/ and place it in any of this directory's parents."
     process.exit 2
 
+  console.log "not starting a selenium server - hope you've got one running!"
+  runMocha(test_dir)
+  return true
+
   child = spawn 'java', ['-jar', "#{selenium_path}", "-Dwebdriver.chrome.driver=#{chromedriver_path}"]
   
   # Either a new selenium server will start, or Java will grumble about one already running.
