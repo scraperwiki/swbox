@@ -1,11 +1,19 @@
 {
   "name": "swbox",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A command line interface for editing files from your ScraperWiki box, on your local machine.",
   "main": "swbox.js",
+  "bin": {
+    "swbox": "./cli.js"
+  },
+  "dependencies": {
+    "mocha": "1.9.0",
+    "coffee-script": "~1.6.3",
+    "wd": "~0.1.1",
+    "wd40": "~0.0.0"
+  },
   "scripts": {
-    "prepublish": "{ echo '#!/usr/bin/env node'; coffee -p swbox.coffee;} > tmp.js && mv tmp.js swbox.js && chmod +x swbox.js",
-
+    "prepublish": "./prepublish",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
