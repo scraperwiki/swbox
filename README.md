@@ -19,27 +19,21 @@ Supports two alternative workflows:
 
 ## How to use
 
-1. Git clone the swbox repo to somewhere safe.
+1. Use [npm](https://npmjs.org) to globally install `swbox` ([nvm](https://github.com/creationix/nvm) is really useful and gets your `npm` for free, so if you're new to Node, try that first):
 
     ```shell
-    cd ~ # feel free to change this directory
-    git clone git://github.com/scraperwiki/swbox.git
-    cd swbox
+    npm install -g swbox
     ```
 
-2. Add swbox to your $PATH, so you can type "swbox" from anywhere on your filesystem.
+    (If you'd prefer not to use npm, you can always `git clone` this repo and run `./prepublish` yourself to get an executable cli.js script which you can add to your `$PATH`)
 
-    ```shell
-    ln -s $(pwd)/swbox.coffee /usr/local/bin/swbox
-    ```
-
-3. Read the documentation by running `swbox help`
+2. Read the documentation by running `swbox help`
 
 ## Requirements
 
 Mounting boxes as local drives requires **Fuse** and **SSHFS**. Both are available on the [Fuse for OS X homepage](http://osxfuse.github.com/).
 
-The `swbox` command line client requires [Node.js](http://nodejs.org) and [CoffeeScript](http://coffeescript.org) to be installed. `swbox update` requires Git.
+The `swbox` command line client requires [Node.js](http://nodejs.org).
 
 ## Developing swbox
 
@@ -58,12 +52,16 @@ those changes are live.
 You still need to compile the CoffeeScript to JavaScript before testing a change to swbox,
 do that with:
 
-```./prepublish```
+```
+./prepublish
+```
 
 If you want to use this local in-development version of swbox with a box, then go to the
 box's directory and use:
 
-```npm link swbox```
+```
+npm link swbox
+```
 
 Now `swbox = require 'swbox'` will automatically get your local in-development version of swbox.
 
