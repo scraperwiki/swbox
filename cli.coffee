@@ -208,26 +208,26 @@ CHROMEDRIVER_PATHS = [
 
 getNearestSelenium = ->
   ret = null
-  for selenium_path in SELENIUM_PATHS
-    path = nearest(selenium_path)
+  for seleniumPath in SELENIUM_PATHS
+    path = nearest(seleniumPath)
     if path
-      ret = "#{path}/#{selenium_path}"
+      ret = "#{path}/#{seleniumPath}"
       break
   return ret
 
 getNearestChromedriver = ->
   ret = null
-  for chromedriver_path in CHROMEDRIVER_PATHS
-    path = nearest(chromedriver_path)
+  for chromedriverPath in CHROMEDRIVER_PATHS
+    path = nearest(chromedriverPath)
     if path
-      ret = "#{path}/#{chromedriver_path}"
+      ret = "#{path}/#{chromedriverPath}"
       break
   return ret
 
 test = ->
-  test_dir = nearest "test"
-  if test_dir
-    test_dir = "#{test_dir}/test"
+  testDir = nearest "test"
+  if testDir
+    testDir = "#{testDir}/test"
   else
     warn "No tests found. Swbox expects Mocha tests to be placed in this box's /test directory."
     process.exit 2
@@ -235,11 +235,11 @@ test = ->
   # check whether selenium server is running
   wd.remote().status (err, status) ->
     if status
-      runMocha(test_dir)
+      runMocha(testDir)
     else
       startSelenium (err) ->
         warn err if err
-        runMocha(test_dir)
+        runMocha(testDir)
 
 startSelenium = (cb) ->
   seleniumPath = getNearestSelenium()
@@ -270,14 +270,14 @@ startSelenium = (cb) ->
       # write "Selenium has started running"
       cb null
 
-runMocha = (test_dir) ->
+runMocha = (testDir) ->
   mocha = new Mocha
     reporter: 'spec'
     timeout: 16000 # really long timeout, because swbox.setup() (logging in) takes ages
 
-  for file in fs.readdirSync(test_dir)
+  for file in fs.readdirSync(testDir)
     if /\.(js|coffee)$/.test file
-      mocha.addFile "#{test_dir}/#{file}"
+      mocha.addFile "#{testDir}/#{file}"
 
   mocha.run (failures) ->
     process.exit failures
