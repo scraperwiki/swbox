@@ -66,7 +66,12 @@ exports.setup = (done) ->
 
   wd40.init ->
     loginSlowly username, password, ->
-      browser.get "https://scraperwiki.com/dataset/#{box}/settings", done
+      # get dataset (tool) page
+      browser.get "https://scraperwiki.com/dataset/#{box}/settings", ->
+        # wait for dataset tool content to load
+        browser.waitForElementByCss 'iframe', 8000, ->
+          # focus on the dataset tool content so user's tests can run
+          wd40.switchToBottomFrame done
 
 
 exports.browser = browser
