@@ -273,7 +273,7 @@ test = ->
 runMocha = (test_dir) ->
   mocha = new Mocha
     reporter: 'spec'
-    timeout: 8000
+    timeout: 16000 # really long timeout, because swbox.setup() (logging in) takes ages
 
   for file in fs.readdirSync(test_dir)
     if /\.(js|coffee)$/.test file
