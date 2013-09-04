@@ -267,7 +267,7 @@ startSelenium = (cb) ->
     # :todo:(drj) We need to buffer here in case we get
     # "Started " in one data block and "org.openqa..." in another.
     if "#{data}".indexOf('Started org.openqa.jetty.jetty.Server') > -1
-      write "Selenium has started running"
+      # write "Selenium has started running"
       cb null
 
 runMocha = (test_dir) ->
