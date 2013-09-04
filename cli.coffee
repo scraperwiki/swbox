@@ -8,7 +8,7 @@ Mocha = require 'mocha'
 # Magically, means that mocha can run tests written in CoffeeScript.
 require 'coffee-script'
 
-__version = '0.0.9'
+VERSION = require('./package').version
 
 {spawn, exec} = require 'child_process'
 
@@ -19,8 +19,8 @@ warn = (text) ->
   process.stderr.write "#{text}\n"
 
 showVersion = ->
-  write "swbox #{__version}"
-  write '© Zarino Zappia, AGPL Licensed'
+  write "swbox #{VERSION}"
+  write '© ScraperWiki Limited, AGPL Licensed'
 
 showHelp = ->
     write 'swbox:  A command line interface for interacting with ScraperWiki boxes'
@@ -31,7 +31,6 @@ showHelp = ->
     write '    swbox mount <boxName>        Mount <boxName> as an sshfs drive'
     write '    swbox unmount <boxName>      Unmount the <boxName> sshfs drive'
     write '    swbox test                   Run the tests inside this box'
-    write '    swbox update                 Download latest version of swbox'
     write '    swbox [-v|--version]         Show version & license info'
     write '    swbox help                   Show this documentation'
     write 'Examples:'
@@ -282,16 +281,6 @@ runMocha = (testDir) ->
   mocha.run (failures) ->
     process.exit failures
 
-update = ->
-  exec "cd #{__dirname}; git pull", (err, stdout, stderr) ->
-    if "#{stdout}".indexOf 'Already up-to-date' == 0
-      write "You're already running the latest version of swbox"
-    else if not stderr
-      write 'swbox has been updated!'
-    else
-      warn 'Error: could not update.'
-      warn stderr
-
 swbox =
   mount: mountBox
   unmount: unmountBox
@@ -299,8 +288,8 @@ swbox =
   push: pushBox
   help: showHelp
   test: test
-  update: update
   '--help': showHelp
+  version: showVersion
   '-v': showVersion
   '--version': showVersion
 

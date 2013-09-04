@@ -22,7 +22,7 @@ Supports two alternative workflows:
 1. Git clone the swbox repo to somewhere safe.
 
     ```shell
-    cd ~ # feel free to change this directory 
+    cd ~ # feel free to change this directory
     git clone git://github.com/scraperwiki/swbox.git
     cd swbox
     ```
@@ -68,6 +68,14 @@ box's directory and use:
 Now `swbox = require 'swbox'` will automatically get your local in-development version of swbox.
 
 ## Changelog
+
+#### 0.0.11 – pandora's box
+
+* Swbox is now published to npm. `swbox update` is no longer required and has been removed.
+
+#### 0.0.10 – lunch box
+
+* `swbox test` runs .coffee or .js tests in /tool/test directory, using Mocha.
 
 #### 0.0.9 – set-top box
 
